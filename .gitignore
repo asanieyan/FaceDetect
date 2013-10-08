@@ -1,4 +1,3 @@
 .*
 !.gitignore
 Pods/
-server/node_modules/
