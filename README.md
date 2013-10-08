@@ -1,0 +1,4 @@
+FaceDetect
+==========
+
+Sample AVFoundation app 
