@@ -1,3 +1,2 @@
-# Using Node.js and Websockets to Build a Chat Service
+# Using Node.js and Websockets to Build a IP Camera
 
-The source code for the Nettuts+ article, "Using Node.js and Websockets to Build a Chat Service" by Guillaume Besson.
