@@ -53,11 +53,4 @@
 }
 
 
-
-- (void)captureOutput:(AVCaptureOutput *)captureOutput didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
-{
-//    NSLog(@"%@", @"Dropped");
-//    NSLog(@"%@", NSStringFromSelector(_cmd));
-}
-
 @end
