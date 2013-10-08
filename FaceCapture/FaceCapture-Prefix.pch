@@ -1,0 +1,23 @@
+//
+// Prefix header for all source files of the 'FaceCapture' target in the 'FaceCapture' project
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import <AVFoundation/AVFoundation.h>
+    #import <CoreMedia/CoreMedia.h>
+    #import <CoreVideo/CoreVideo.h>
+    #import <CoreImage/CoreImage.h>
+    #import <Accelerate/Accelerate.h>
+    #import "AFNetworking/AFHTTPRequestOperationManager.h"
+    #import "FCVideoRecorder.h"
+    #import "FCVideoView.h"
+    #import "FCViewController.h"
+#endif
