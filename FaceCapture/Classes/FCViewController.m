@@ -41,6 +41,7 @@
 
 - (void)videoRecorder:(FCVideoRecorder *)videoRecorder didRecordVideoSegment:(FCVideoSegment *)videoSegment
 {
+    //@TODO
     //we should use socket connect but for now http is okay
     [_manager POST:@"/video" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
             NSError *error;

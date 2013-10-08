@@ -151,7 +151,10 @@
     vImage_Buffer ibuff = { baseAddress, height, width, bytesPerRow};
     vImage_Buffer ubuff = { outBuff, height, width, bytesPerRow};
     vImageVerticalReflect_ARGB8888 (&ibuff, &ubuff, 0);
-
+    
+    //@TODO
+    //need to the rotate using vimage instead of layer transform
+    
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
 
     //create a bitmap context from the buffer
