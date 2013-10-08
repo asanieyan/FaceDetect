@@ -8,18 +8,26 @@
 
 #import <CoreImage/CoreImage.h>
 
-#define FRAMES_PER_SECOND 15
+#define FRAMES_PER_SECOND 20
+
+typedef enum FCVideoRecordingState {
+  FCVideoNotRecording = 1,
+  FCVideoRecording = 2  
+} FCVideoRecordingState;
 
 @interface FCVideoView() <AVCaptureVideoDataOutputSampleBufferDelegate, NSStreamDelegate>
 {
     BOOL _faceDetectorQueueReady;
     dispatch_queue_t _faceDetectorQueue;
+    
+    FCVideoRecordingState _recordingState;
 }
 //av stuff
 @property(nonatomic,strong) AVCaptureSession *captureSession;
 @property(nonatomic,strong) CALayer *previewLayer;
 @property(nonatomic,strong) AVCaptureDevice *cameraDevice;
 @property(nonatomic,strong) CIDetector *faceDetector;
+@property(atomic,strong) CIImage *ciImage;
 
 
 @property(nonatomic,strong) AVCaptureVideoDataOutput *dataOutput;
@@ -83,6 +91,8 @@
         }];
         _faceDetectorQueueReady = YES;
         _faceDetectorQueue      = dispatch_queue_create("FaceDetection", nil);
+        _recordingState = FCVideoNotRecording;
+        [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(detectFaceFromImage) userInfo:nil repeats:YES];
     }
     return self;
 }
@@ -105,6 +115,36 @@
     if ( self.superview ) {
         self.frame  = self.superview.bounds;        
         self.previewLayer.frame = self.bounds;
+    }
+}
+
+- (void)detectFaceFromImage
+{
+    if ( self.ciImage && _recordingState == FCVideoNotRecording )
+    {
+        __block CIImage *image = self.ciImage;
+        dispatch_async(_faceDetectorQueue, ^{
+            __block NSArray *features = [self.faceDetector featuresInImage:image options:@{
+                    CIDetectorImageOrientation : @6
+            }];
+            if ( features.count > 0 && _recordingState == FCVideoNotRecording ) {
+                _recordingState = FCVideoRecording;
+                NSLog(@"Detected Face, Started Recording");
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    //stop recording in 60 seconds
+                    [NSTimer scheduledTimerWithTimeInterval:60 target:self selector:@selector(stopRecording) userInfo:nil repeats:NO];
+                });
+            }
+        });
+    }
+}
+
+- (void)stopRecording
+{
+    _recordingState = FCVideoNotRecording;
+    NSLog(@"Stop Recording");
+    if ( self.videoRecorder ) {
+        [self.videoRecorder finishRecording];
     }
 }
 
@@ -160,13 +200,17 @@
     //create a bitmap context from the buffer
     CGContextRef newContext = CGBitmapContextCreate(ubuff.data, ubuff.width,ubuff.height,8,ubuff.rowBytes,colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
     
-    __block CGImageRef imageRef = CGBitmapContextCreateImage(newContext);
+    CGImageRef imageRef = CGBitmapContextCreateImage(newContext);
+    self.ciImage        = [CIImage imageWithCGImage:imageRef];
     dispatch_sync(dispatch_get_main_queue(), ^{
         self.previewLayer.contents = (__bridge id)imageRef;
     });
-    if ( self.videoRecorder ) {
+    
+    if ( self.videoRecorder &&
+        _recordingState == FCVideoRecording ) {
         [self.videoRecorder recordFrame:imageBuffer framePerSecond:FRAMES_PER_SECOND];
     }
+    
     free(outBuff);
     CGContextRelease(newContext); 
     CGColorSpaceRelease(colorSpace);

@@ -15,6 +15,7 @@
 @interface FCVideoRecorder ()
 
 - (void)recordFrame:(CVPixelBufferRef)frame framePerSecond:(NSUInteger)framePerSecond;
+- (void)finishRecording;
 
 @property(nonatomic,assign) NSUInteger fileCounter;
 @property(nonatomic,assign) NSUInteger frameCounter;

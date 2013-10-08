@@ -101,6 +101,15 @@
     }
 }
 
+- (void)finishRecording
+{
+    _frameCounter = 0;
+    [self.assetWriter finishWritingWithCompletionHandler:^{
+        
+    }];
+    self.assetWriter = nil;
+}
+
 @end
 
 
